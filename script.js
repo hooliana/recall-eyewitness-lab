@@ -6,6 +6,29 @@ const supabaseClient = supabase.createClient(
     SUPABASE_KEY
 );
 
+const sceneImages = [
+    "images/scene1.png",
+    "images/scene2.png",
+    "images/scene3.png",
+    "images/scene4.png",
+    "images/scene5.png"
+];
+
+function preloadScenes() {
+    return Promise.all(
+        sceneImages.map(src => {
+            return new Promise((resolve, reject) => {
+                const image = new Image();
+
+                image.onload = resolve;
+                image.onerror = reject;
+
+                image.src = src;
+            });
+        })
+    );
+}
+
 let answers = {};
 
 const condition = Math.random() < 0.5 ? "neutral" : "leading";
@@ -25,7 +48,21 @@ function shuffleArray(array) {
 
 const beginButton = document.getElementById("begin-button");
 
+beginButton.disabled = true;
+beginButton.textContent = "LOADING EXPERIMENT...";
+
+preloadScenes()
+    .then(function () {
+        beginButton.disabled = false;
+        beginButton.textContent = "BEGIN EXPERIMENT";
+    })
+    .catch(function (error) {
+        console.error("Error loading scene images:", error);
+        beginButton.textContent = "ERROR LOADING EXPERIMENT";
+    });
+
 beginButton.addEventListener("click", function () {
+    
 	document.querySelector(".intro-screen").innerHTML = `
 		<h2>The experiment will begin shortly.</h2>
 		<p id="countdown">3</p>

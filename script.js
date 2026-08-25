@@ -1,642 +1,530 @@
-const SUPABASE_URL = "https://rbcgxbzanwwiqhwpiqie.supabase.co";
-const SUPABASE_KEY = "sb_publishable_lAfG4lEaeLbRlUvmphKzzQ_cZYDuImm";
+body {
+	margin: 0;
+	background-color: #0b0b0b;
+	color: white;
 
-const supabaseClient = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
-
-const sceneImages = [
-    "images/scene1.png",
-    "images/scene2.png",
-    "images/scene3.png",
-    "images/scene4.png",
-    "images/scene5.png"
-];
-
-function preloadScenes() {
-    return Promise.all(
-        sceneImages.map(src => {
-            return new Promise((resolve, reject) => {
-                const image = new Image();
-
-                image.onload = resolve;
-                image.onerror = reject;
-
-                image.src = src;
-            });
-        })
-    );
+	font-family: Arial, sans-serif;
 }
 
-let answers = {};
+.intro-screen {
+	height: 100vh;
 
-const condition = Math.random() < 0.5 ? "neutral" : "leading";
+	display: flex;
+	flex-direction: column;
 
-console.log("Condition:", condition);
+	justify-content: center;
+	align-items: center;
 
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const randomIndex = Math.floor(Math.random() * (i + 1));
+	text-align: center;
+}
 
-        [array[i], array[randomIndex]] =
-            [array[randomIndex], array[i]];
+h1 {
+	font-size: 70px;
+	letter-spacing: 15px;
+
+	margin-bottom: 10px;
+}
+
+p {
+	font-size: 18px;
+	line-height: 1.6;
+
+	color: #cccccc;
+}
+
+button {
+	margin-top: 30px;
+
+	padding: 15px 45px;
+
+	background-color: transparent;
+	color: white;
+
+	border: 1px solid white;
+
+	font-size: 16px;
+	letter-spacing: 3px;
+
+	cursor: pointer;
+}
+
+button:hover {
+	background-color: white;
+	color: black;
+}
+
+#countdown {
+    font-size: 80px;
+    font-weight: bold;
+    color: white;
+}
+
+.scene-image {
+    width: 100%;
+    height: 100vh;
+    object-fit: contain;
+    background-color: black;
+}
+
+.result-score {
+    font-size: 24px;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    color: white;
+}
+
+.explanation {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #cccccc;
+    text-align: left;
+    margin-bottom: 30px;
+}
+
+.question-container h3 {
+    margin-top: 35px;
+    text-align: left;
+}
+
+#confidence-slider {
+    width: 100%;
+    margin-top: 30px;
+    cursor: pointer;
+}
+
+#confidence-value {
+    font-size: 32px;
+    color: white;
+    margin-top: 20px;
+    margin-bottom: 25px;
+}
+
+:root {
+    --background: #07080a;
+    --panel: #0f1115;
+    --panel-light: #15181e;
+    --text: #f4f4f5;
+    --muted: #9298a3;
+    --border: #292d35;
+    --border-bright: #555c68;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background:
+        radial-gradient(
+            circle at top,
+            #14171c 0%,
+            #090a0d 35%,
+            #050607 100%
+        );
+
+    color: var(--text);
+    font-family:
+        Inter,
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    min-height: 100vh;
+}
+
+.intro-screen {
+    min-height: 100vh;
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    padding: 40px 20px;
+}
+
+h1 {
+    font-size: clamp(48px, 8vw, 90px);
+    letter-spacing: 18px;
+    margin: 0 0 20px 18px;
+    font-weight: 500;
+}
+
+h2 {
+    line-height: 1.3;
+}
+
+p {
+    color: var(--muted);
+}
+
+button,
+.answer-button {
+    font-family: inherit;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.15s ease;
+}
+
+button {
+    border: 1px solid var(--border-bright);
+    border-radius: 6px;
+
+    background: transparent;
+    color: var(--text);
+
+    padding: 15px 28px;
+
+    letter-spacing: 2px;
+    font-size: 13px;
+
+    cursor: pointer;
+}
+
+button:hover {
+    background: var(--text);
+    color: #08090b;
+    border-color: var(--text);
+    transform: translateY(-1px);
+}
+
+.question-container,
+.results-container {
+    width: min(720px, 92vw);
+
+    background: rgba(15, 17, 21, 0.92);
+
+    border: 1px solid var(--border);
+    border-radius: 14px;
+
+    padding: 48px;
+
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.45);
+
+    backdrop-filter: blur(10px);
+}
+
+.question-number {
+    margin: 0 0 18px;
+
+    color: #7f8691;
+
+    font-size: 11px;
+    letter-spacing: 3px;
+
+    text-transform: uppercase;
+}
+
+.question-container h2,
+.results-container h2 {
+    margin-top: 0;
+    margin-bottom: 32px;
+
+    font-size: clamp(25px, 4vw, 34px);
+    font-weight: 500;
+}
+
+.answer-button {
+    width: 100%;
+    display: block;
+
+    margin: 10px 0;
+    padding: 17px 18px;
+
+    text-align: left;
+
+    background: #111319;
+    color: var(--text);
+
+    border: 1px solid var(--border);
+    border-radius: 7px;
+
+    font-size: 15px;
+    letter-spacing: 0;
+}
+
+.answer-button:hover {
+    background: #191c22;
+    border-color: #646b76;
+    color: white;
+    transform: translateX(3px);
+}
+
+.scene-image {
+    width: 100vw;
+    height: 100vh;
+
+    object-fit: contain;
+
+    background: black;
+}
+
+#countdown {
+    font-size: 90px;
+    font-weight: 300;
+
+    margin: 20px 0;
+
+    color: white;
+}
+
+#confidence-slider {
+    width: 100%;
+    margin: 35px 0 10px;
+    accent-color: white;
+}
+
+#confidence-value {
+    color: white;
+
+    font-size: 42px;
+    font-weight: 300;
+
+    margin: 10px 0 30px;
+}
+
+.result-score {
+    font-size: 24px;
+    color: white;
+
+    margin-bottom: 30px;
+}
+
+.explanation {
+    line-height: 1.8;
+
+    color: #b5bac3;
+
+    text-align: left;
+}
+
+.question-container h3 {
+    margin-top: 35px;
+
+    font-weight: 500;
+    text-align: left;
+}
+
+#results-button {
+    width: 100%;
+    margin-top: 20px;
+}
+
+#restart-button {
+    width: 100%;
+    margin-top: 12px;
+}
+
+.participant-total {
+    margin: 20px 0 32px;
+
+    color: var(--muted);
+
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+
+.participant-total span {
+    display: block;
+
+    color: white;
+
+    font-size: 56px;
+    font-weight: 300;
+    letter-spacing: 0;
+
+    margin-bottom: 4px;
+}
+
+.condition-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    gap: 14px;
+}
+
+.stat-card {
+    min-height: 180px;
+
+    padding: 24px;
+
+    background: var(--panel-light);
+
+    border: 1px solid var(--border);
+    border-radius: 10px;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+}
+
+.stat-card p {
+    margin: 0 0 15px;
+
+    font-size: 11px;
+    letter-spacing: 2px;
+}
+
+.big-stat {
+    display: block;
+
+    font-size: 42px;
+    font-weight: 300;
+
+    margin-bottom: 8px;
+}
+
+.stat-card small {
+    display: block;
+
+    color: var(--muted);
+
+    margin-top: 4px;
+}
+
+.results-heading {
+    margin-top: 40px;
+    margin-bottom: 18px;
+
+    font-weight: 500;
+}
+
+.overall-confidence {
+    margin: 30px 0;
+
+    text-align: center;
+}
+
+.sample-warning {
+    padding: 14px 16px;
+
+    border: 1px solid var(--border);
+    border-radius: 7px;
+
+    background: #111318;
+
+    font-size: 13px;
+    line-height: 1.6;
+
+    margin-bottom: 25px;
+}
+
+@media (max-width: 650px) {
+
+    .question-container,
+    .results-container {
+        padding: 30px 22px;
     }
 
-    return array;
-}
-
-const beginButton = document.getElementById("begin-button");
-
-beginButton.disabled = true;
-beginButton.textContent = "LOADING EXPERIMENT...";
-
-preloadScenes()
-    .then(function () {
-        beginButton.disabled = false;
-        beginButton.textContent = "BEGIN EXPERIMENT";
-    })
-    .catch(function (error) {
-        console.error("Error loading scene images:", error);
-        beginButton.textContent = "ERROR LOADING EXPERIMENT";
-    });
-
-beginButton.addEventListener("click", function () {
-    
-	document.querySelector(".intro-screen").innerHTML = `
-		<h2>The experiment will begin shortly.</h2>
-		<p id="countdown">3</p>
-	`;
-
-	const countdown = document.getElementById("countdown");
-
-	setTimeout(function () {
-		countdown.textContent = "2";
-	}, 1000);
-
-	setTimeout(function () {
-		countdown.textContent = "1";
-	}, 2000);
-
-	setTimeout(function () {
-		showScene1();
-	}, 3000);
-});
-
-function showScene1() {
-	document.querySelector(".intro-screen").innerHTML = `<img src="images/scene1.png" class="scene-image">`;
-	setTimeout(showScene2, 3000);
-}
-
-function showScene2() {
-	document.querySelector(".intro-screen").innerHTML = `<img src="images/scene2.png" class="scene-image">`;
-	setTimeout(showScene3, 3000);
-}
-
-function showScene3() {
-	document.querySelector(".intro-screen").innerHTML = `<img src="images/scene3.png" class="scene-image">`;
-	setTimeout(showScene4, 3000);
-}
-
-function showScene4() {
-	document.querySelector(".intro-screen").innerHTML = `<img src="images/scene4.png" class="scene-image">`;
-	setTimeout(showScene5, 3000);
-}
-
-function showScene5() {
-	document.querySelector(".intro-screen").innerHTML = `<img src="images/scene5.png" class="scene-image">`;
-	setTimeout(endIncident, 3000);
-}
-
-function endIncident() {
-	document.querySelector(".intro-screen").innerHTML = `
-		<h2>The event is over.</h2>
-		<p>You will now be asked a series of questions about what you witnessed.</p>
-		<button id="continue-button">CONTINUE</button>
-	`;
-	document.getElementById("continue-button").addEventListener("click", showQuestion1);
-}
-
-function showQuestion1() {
-    const options = shuffleArray([
-        "Black",
-        "Gray",
-        "Blue",
-        "Brown"
-    ]);
-
-    document.querySelector(".intro-screen").innerHTML = `
-        <div class="question-container">
-
-            <p class="question-number">QUESTION 1 OF 6</p>
-
-            <h2>What color was the perpetrator's jacket?</h2>
-
-            ${options.map(option => `
-                <button
-                    class="answer-button"
-                    onclick="saveAnswer1('${option}')"
-                >
-                    ${option}
-                </button>
-            `).join("")}
-
-        </div>
-    `;
-}
-
-function saveAnswer1(answer) {
-	answers.question1 = answer;
-	showQuestion2();
-}
-
-function showQuestion2() {
-
-    const questionText = condition === "neutral"
-        ? "How clearly do you remember the object taken from the counter?"
-        : "How clearly do you remember the phone taken from the counter?";
-
-    const options = shuffleArray([
-        "Very clearly",
-        "Somewhat clearly",
-        "Not very clearly",
-        "Not at all"
-    ]);
-
-    document.querySelector(".intro-screen").innerHTML = `
-        <div class="question-container">
-
-            <p class="question-number">QUESTION 2 OF 6</p>
-
-            <h2>${questionText}</h2>
-
-            ${options.map(option => `
-                <button
-                    class="answer-button"
-                    onclick="saveAnswer2('${option}')"
-                >
-                    ${option}
-                </button>
-            `).join("")}
-
-        </div>
-    `;
-}
-
-function saveAnswer2(answer) {
-	answers.question2 = answer;
-	answers.condition = condition;
-	showQuestion3();
-}
-
-function showQuestion3() {
-    const options = shuffleArray([
-        "Red",
-        "Blue",
-        "Black",
-        "White"
-    ]);
-
-    document.querySelector(".intro-screen").innerHTML = `
-        <div class="question-container">
-
-            <p class="question-number">QUESTION 3 OF 6</p>
-
-            <h2>What color shirt was the cashier wearing?</h2>
-
-            ${options.map(option => `
-                <button
-                    class="answer-button"
-                    onclick="saveAnswer3('${option}')"
-                >
-                    ${option}
-                </button>
-            `).join("")}
-
-        </div>
-    `;
-}
-
-function saveAnswer3(answer) {
-	answers.question3 = answer;
-	showQuestion4();
-}
-
-function showQuestion4() {
-    const options = shuffleArray([
-        "Near the drink coolers",
-        "Near the register",
-        "Near the entrance",
-        "Outside the store"
-    ]);
-
-    document.querySelector(".intro-screen").innerHTML = `
-        <div class="question-container">
-
-            <p class="question-number">QUESTION 4 OF 6</p>
-
-            <h2>Where was the bystander customer located?</h2>
-
-            ${options.map(option => `
-                <button
-                    class="answer-button"
-                    onclick="saveAnswer4('${option}')"
-                >
-                    ${option}
-                </button>
-            `).join("")}
-
-        </div>
-    `;
-}
-
-function saveAnswer4(answer) {
-    answers.question4 = answer;
-    showQuestion5();
-}
-
-function showQuestion5() {
-    const options = shuffleArray([
-        "Yes",
-        "No",
-        "I'm not sure"
-    ]);
-
-    document.querySelector(".intro-screen").innerHTML = `
-        <div class="question-container">
-
-            <p class="question-number">QUESTION 5 OF 6</p>
-
-            <h2>Was the perpetrator wearing a hat?</h2>
-
-            ${options.map(option => `
-                <button
-                    class="answer-button"
-                    onclick="saveAnswer5('${option}')"
-                >
-                    ${option}
-                </button>
-            `).join("")}
-
-        </div>
-    `;
-}
-
-function saveAnswer5(answer) {
-	answers.question5 = answer;
-	showQuestion6();
-}
-
-function showQuestion6() {
-    const options = shuffleArray([
-        "Phone",
-        "Wallet",
-        "Cash",
-        "Keys",
-        "I don't remember"
-    ]);
-
-    document.querySelector(".intro-screen").innerHTML = `
-        <div class="question-container">
-
-            <p class="question-number">QUESTION 6 OF 6</p>
-
-            <h2>What item do you remember being taken from the counter?</h2>
-
-            ${options.map(option => `
-                <button
-                    class="answer-button"
-                    onclick="saveAnswer6('${option}')"
-                >
-                    ${option}
-                </button>
-            `).join("")}
-
-        </div>
-    `;
-}
-
-function saveAnswer6(answer) {
-    answers.question6 = answer;
-    showConfidenceQuestion();
-}
-
-function showConfidenceQuestion() {
-    document.querySelector(".intro-screen").innerHTML = `
-        <div class="question-container">
-
-            <p class="question-number">CONFIDENCE RATING</p>
-
-            <h2>
-                How confident are you that your answer about the stolen item was correct?
-            </h2>
-
-            <input
-                type="range"
-                id="confidence-slider"
-                min="0"
-                max="100"
-                value="50"
-            >
-
-            <p id="confidence-value">50%</p>
-
-            <button id="confidence-submit">
-                SUBMIT
-            </button>
-
-        </div>
-    `;
-
-    const slider = document.getElementById("confidence-slider");
-    const valueDisplay = document.getElementById("confidence-value");
-
-    slider.addEventListener("input", function () {
-        valueDisplay.textContent = slider.value + "%";
-    });
-
-    document
-        .getElementById("confidence-submit")
-        .addEventListener("click", saveConfidence);
-}
-
-function saveConfidence() {
-    const slider = document.getElementById("confidence-slider");
-
-    answers.confidence = Number(slider.value);
-
-    showResults();
-}
-
-function showResults() {
-
-    let score = 0;
-
-    if (answers.question1 === "Black") {
-        score++;
+    .condition-grid {
+        grid-template-columns: 1fr;
     }
 
-    if (answers.question3 === "Red") {
-        score++;
+    h1 {
+        letter-spacing: 10px;
+        margin-left: 10px;
     }
 
-    if (answers.question4 === "Near the drink coolers") {
-        score++;
-    }
-
-    if (answers.question5 === "No") {
-        score++;
-    }
-
-    if (answers.question6 === "Phone") {
-        score++;
-    }
-
-    const percentage = (score / 5) * 100;
-    saveResponseToDatabase(score);
-    document.querySelector(".intro-screen").innerHTML = `
-        <div class="question-container">
-
-            <p class="question-number">MEMORY RESULTS</p>
-
-            <h2>${score} / 5 Correct</h2>
-
-            <p class="result-score">
-                ${percentage}% Memory Accuracy
-            </p>
-
-            <button id="reveal-button">
-                REVEAL EXPERIMENT
-            </button>
-
-        </div>
-    `;
-
-    document
-        .getElementById("reveal-button")
-        .addEventListener("click", showExperimentReveal);
-}
-
-function showExperimentReveal() {
-	const conditionTitle = condition === "neutral" ? "NEUTRAL CONDITION" : "LEADING CONDITION";
-	const conditionExplanation = condition === "neutral"
-		? `You were asked how clearly you remembered "the object" taken from the counter. The question did not tell you what that object was.`
-		: `You were asked how clearly you remembered "the phone" taken from the counter. Unlike the neutral question, this wording identified the object before you were later asked to recall it.`;
-
-	document.querySelector(".intro-screen").innerHTML = `
-		<div class="question-container">
-			<p class="question-number">EXPERIMENT 01</p>
-			<h2>${conditionTitle}</h2>
-			<p class="explanation">${conditionExplanation}</p>
-			<h3>Why does this matter?</h3>
-			<p class="explanation">Eyewitness memory is reconstructive rather than a perfect recording of an event. The wording of questions can provide information that may influence how an eyewitness later remembers an event.</p>
-			<button id="results-button">
-                VIEW LIVE RESULTS
-            </button>
-
-			<button id="restart-button">
-				TRY ANOTHER CONDITION
-			</button>
-		</div>
-	`;
-
-    document
-    .getElementById("results-button")
-    .addEventListener("click", showLiveResults);
-
-	document.getElementById("restart-button").addEventListener("click", function () {
-		location.reload();
-	});
-}
-
-async function saveResponseToDatabase(score) {
-
-    const { data, error } = await supabaseClient
-        .from("responses")
-        .insert([
-            {
-                condition: condition,
-                question1: answers.question1,
-                question2: answers.question2,
-                question3: answers.question3,
-                question4: answers.question4,
-                question5: answers.question5,
-                question6: answers.question6,
-                confidence: answers.confidence,
-                score: score
-            }
-        ]);
-
-    if (error) {
-        console.error("Error saving response:", error);
-    } else {
-        console.log("Response saved successfully!");
+    .scene-image {
+        height: auto;
+        max-height: 100vh;
     }
 }
 
-async function showLiveResults() {
+.privacy-note {
+    margin-top: 25px;
+    max-width: 500px;
 
-    document.querySelector(".intro-screen").innerHTML = `
-        <div class="question-container">
-            <p class="question-number">EXPERIMENT 01</p>
-            <h2>Loading live results...</h2>
-        </div>
-    `;
+    font-size: 12px;
+    line-height: 1.6;
 
-    const { data, error } = await supabaseClient
-        .rpc("get_recall_stats");
+    color: #686e78;
+}
 
-    if (error) {
-        console.error("Error loading results:", error);
+/* ================================
+   RECALL LAYOUT FIX
+================================ */
 
-        document.querySelector(".intro-screen").innerHTML = `
-            <div class="question-container">
-                <p class="question-number">EXPERIMENT 01</p>
-                <h2>Unable to load results.</h2>
-                <button onclick="location.reload()">RETURN HOME</button>
-            </div>
-        `;
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+}
 
-        return;
+body {
+    min-height: 100vh;
+}
+
+.intro-screen {
+    width: 100% !important;
+    min-height: 100vh !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    text-align: center !important;
+
+    padding: 40px 20px !important;
+    margin: 0 !important;
+}
+
+.intro-screen > p {
+    max-width: 600px;
+}
+
+.intro-screen h1 {
+    margin: 10px 0 25px 0 !important;
+}
+
+.intro-screen #begin-button {
+    margin-top: 25px;
+}
+
+.intro-screen .privacy-note {
+    margin-top: 25px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
     }
 
-    const stats = data[0];
-
-    const neutralRate =
-        stats.neutral_phone_rate === null
-            ? "—"
-            : stats.neutral_phone_rate + "%";
-
-    const leadingRate =
-        stats.leading_phone_rate === null
-            ? "—"
-            : stats.leading_phone_rate + "%";
-
-    const averageConfidence =
-        stats.avg_confidence === null
-            ? "—"
-            : stats.avg_confidence + "%";
-
-    const correctConfidence =
-        stats.correct_avg_confidence === null
-            ? "—"
-            : stats.correct_avg_confidence + "%";
-
-    const incorrectConfidence =
-        stats.incorrect_avg_confidence === null
-            ? "—"
-            : stats.incorrect_avg_confidence + "%";
-
-    let sampleNotice = "";
-
-    if (stats.total_participants < 10) {
-        sampleNotice = `
-            <p class="sample-warning">
-                Early sample — these results are descriptive only
-                and should not be interpreted as scientific conclusions.
-            </p>
-        `;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
+}
 
-    document.querySelector(".intro-screen").innerHTML = `
-        <div class="results-container">
+.question-container,
+.results-container,
+.intro-screen > h1,
+.intro-screen > h2,
+.intro-screen > p,
+.intro-screen > button {
+    animation: fadeIn 0.45s ease-out;
+}
 
-            <p class="question-number">
-                EXPERIMENT 01 // LIVE RESULTS
-            </p>
+button:disabled {
+    opacity: 0.45;
+    cursor: wait;
+    transform: none;
+}
 
-            <h2>Eyewitness Memory</h2>
-
-            <div class="participant-total">
-                <span>${stats.total_participants}</span>
-                PARTICIPANTS
-            </div>
-
-            ${sampleNotice}
-
-            <div class="condition-grid">
-
-                <div class="stat-card">
-                    <p>NEUTRAL CONDITION</p>
-
-                    <span class="big-stat">
-                        ${neutralRate}
-                    </span>
-
-                    <small>
-                        recalled the phone
-                    </small>
-
-                    <small>
-                        n = ${stats.neutral_count}
-                    </small>
-                </div>
-
-                <div class="stat-card">
-                    <p>LEADING CONDITION</p>
-
-                    <span class="big-stat">
-                        ${leadingRate}
-                    </span>
-
-                    <small>
-                        recalled the phone
-                    </small>
-
-                    <small>
-                        n = ${stats.leading_count}
-                    </small>
-                </div>
-
-            </div>
-
-            <h3 class="results-heading">
-                Confidence & Accuracy
-            </h3>
-
-            <div class="condition-grid">
-
-                <div class="stat-card">
-                    <p>CORRECT RECALL</p>
-
-                    <span class="big-stat">
-                        ${correctConfidence}
-                    </span>
-
-                    <small>
-                        average confidence
-                    </small>
-                </div>
-
-                <div class="stat-card">
-                    <p>INCORRECT RECALL</p>
-
-                    <span class="big-stat">
-                        ${incorrectConfidence}
-                    </span>
-
-                    <small>
-                        average confidence
-                    </small>
-                </div>
-
-            </div>
-
-            <p class="overall-confidence">
-                Overall average confidence:
-                <strong>${averageConfidence}</strong>
-            </p>
-
-            <button id="restart-button">
-                RUN EXPERIMENT AGAIN
-            </button>
-
-        </div>
-    `;
-
-    document
-        .getElementById("restart-button")
-        .addEventListener("click", function () {
-            location.reload();
-        });
+button:disabled:hover {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--border-bright);
+    transform: none;
 }

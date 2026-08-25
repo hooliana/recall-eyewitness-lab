@@ -249,9 +249,9 @@ function saveAnswer4(answer) {
 
 function showQuestion5() {
     const options = shuffleArray([
-        "Yes",
-        "No",
-        "I'm not sure"
+        { label: "Yes", value: "Yes" },
+        { label: "No", value: "No" },
+        { label: "I'm not sure", value: "Unsure" }
     ]);
 
     document.querySelector(".intro-screen").innerHTML = `
@@ -264,14 +264,20 @@ function showQuestion5() {
             ${options.map(option => `
                 <button
                     class="answer-button"
-                    onclick="saveAnswer5('${option}')"
+                    data-answer="${option.value}"
                 >
-                    ${option}
+                    ${option.label}
                 </button>
             `).join("")}
 
         </div>
     `;
+
+    document.querySelectorAll(".answer-button").forEach(button => {
+        button.addEventListener("click", function () {
+            saveAnswer5(this.dataset.answer);
+        });
+    });
 }
 
 function saveAnswer5(answer) {
@@ -281,11 +287,11 @@ function saveAnswer5(answer) {
 
 function showQuestion6() {
     const options = shuffleArray([
-        "Phone",
-        "Wallet",
-        "Cash",
-        "Keys",
-        "I don't remember"
+        { label: "Phone", value: "Phone" },
+        { label: "Wallet", value: "Wallet" },
+        { label: "Cash", value: "Cash" },
+        { label: "Keys", value: "Keys" },
+        { label: "I don't remember", value: "Unsure" }
     ]);
 
     document.querySelector(".intro-screen").innerHTML = `
@@ -298,14 +304,20 @@ function showQuestion6() {
             ${options.map(option => `
                 <button
                     class="answer-button"
-                    onclick="saveAnswer6('${option}')"
+                    data-answer="${option.value}"
                 >
-                    ${option}
+                    ${option.label}
                 </button>
             `).join("")}
 
         </div>
     `;
+
+    document.querySelectorAll(".answer-button").forEach(button => {
+        button.addEventListener("click", function () {
+            saveAnswer6(this.dataset.answer);
+        });
+    });
 }
 
 function saveAnswer6(answer) {

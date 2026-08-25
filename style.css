@@ -515,3 +515,61 @@ body {
 .intro-screen > button {
     animation: fadeIn 0.45s ease-out;
 }
+
+/* ================================
+   CONFIDENCE SLIDER
+================================ */
+
+#confidence-slider {
+    -webkit-appearance: none;
+    appearance: none;
+
+    width: 100%;
+    height: 6px;
+
+    margin: 35px 0 15px;
+
+    background: #292d35;
+    border-radius: 10px;
+
+    outline: none;
+    cursor: pointer;
+}
+
+/* Chrome, Edge, Safari */
+#confidence-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+
+    width: 24px;
+    height: 24px;
+
+    border-radius: 50%;
+    border: 2px solid white;
+
+    background: white;
+
+    cursor: grab;
+}
+
+#confidence-slider::-webkit-slider-thumb:active {
+    cursor: grabbing;
+    transform: scale(1.1);
+}
+
+/* Firefox */
+#confidence-slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+
+    border-radius: 50%;
+    border: 2px solid white;
+
+    background: white;
+
+    cursor: grab;
+}
+
+#confidence-slider::-moz-range-thumb:active {
+    cursor: grabbing;
+}
